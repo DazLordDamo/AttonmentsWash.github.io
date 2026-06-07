@@ -1,505 +1,412 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTA RP — Wash Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Wash Tracker</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root {
-  --bg:      #0d0d0d;
-  --card:    #141414;
-  --border:  #222;
-  --border2: #2e2e2e;
-  --red:     #f03e3e;
-  --green:   #12d97c;
-  --yellow:  #f5c518;
-  --purple:  #a78bfa;
-  --dim:     #555;
-  --muted:   #888;
-  --text:    #e2e2e2;
+:root{
+    --bg:#0f1115;
+    --card:#181c24;
+    --border:#262c36;
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --green:#22c55e;
+    --yellow:#facc15;
+    --red:#ef4444;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
-body::after {
-  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 999;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px);
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
-header {
-  border-bottom: 1px solid var(--border); padding: 18px 32px;
-  display: flex; align-items: center; gap: 14px;
-  background: rgba(13,13,13,0.98); position: sticky; top: 0; z-index: 100;
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,sans-serif;
+    padding:24px;
 }
-.logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--green); text-shadow: 0 0 16px rgba(18,217,124,0.4); }
-.logo-sep { color: var(--border2); }
-.header-sub { font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
 
-.wrap { max-width: 1060px; margin: 0 auto; padding: 28px 24px 80px; display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-.left { display: flex; flex-direction: column; gap: 16px; }
-.right { display: flex; flex-direction: column; gap: 20px; }
-
-.card { background: var(--card); border: 1px solid var(--border); }
-.card-head {
-  padding: 11px 16px; border-bottom: 1px solid var(--border);
-  font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 3px; color: var(--muted);
-  display: flex; align-items: center; justify-content: space-between;
+.container{
+    max-width:1400px;
+    margin:auto;
 }
-.card-body { padding: 14px 16px; }
 
-.add-row { display: flex; gap: 8px; }
-
-input[type=text], input[type=number], input[type=date], select {
-  background: #0d0d0d; border: 1px solid var(--border2);
-  color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
-  padding: 8px 11px; outline: none; width: 100%; transition: border-color .15s;
+h1{
+    margin-bottom:20px;
 }
-input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
-input:focus, select:focus { border-color: var(--green); }
-input::placeholder { color: var(--dim); }
-select option { background: #1a1a1a; }
 
-.btn { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; padding: 8px 16px; border: none; cursor: pointer; transition: all .15s; white-space: nowrap; }
-.btn-green { background: var(--green); color: #000; }
-.btn-green:hover { background: #0fbb69; }
-.btn-red-out { background: transparent; color: var(--red); border: 1px solid var(--red); font-size: 11px; letter-spacing: 1px; padding: 4px 9px; cursor: pointer; font-family: 'DM Mono', monospace; transition: all .15s; }
-.btn-red-out:hover { background: rgba(240,62,62,0.1); }
-.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--muted); font-size: 11px; letter-spacing: 1px; padding: 4px 9px; cursor: pointer; font-family: 'DM Mono', monospace; transition: all .15s; }
-.btn-ghost:hover { border-color: var(--muted); color: var(--text); }
-
-/* member list */
-.member-list { display: flex; flex-direction: column; }
-.member-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); transition: background .12s; }
-.member-row:last-child { border-bottom: none; }
-.member-row:hover { background: #181818; }
-.m-name { font-weight: 600; font-size: 14px; }
-.m-totals { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
-.m-totals .dv { color: var(--red); }
-.m-totals .cv { color: var(--green); }
-
-/* wash form */
-.wash-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.wash-form-row2 { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-top: 10px; }
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); }
-
-/* wash preview */
-.wash-preview {
-  display: none; background: rgba(18,217,124,0.05);
-  border: 1px solid rgba(18,217,124,0.18); padding: 10px 14px; margin-top: 12px;
-  align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 12px;
-  flex-wrap: wrap;
+.grid{
+    display:grid;
+    gap:20px;
+    grid-template-columns:350px 1fr;
 }
-.wp-arrow { color: var(--border2); margin: 0 4px; }
-.wp-d { color: var(--red); }
-.wp-c { color: var(--green); font-size: 15px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
-.wp-cut { color: var(--yellow); }
 
-/* week header rows in transaction table */
-.week-header td {
-  background: #111 !important;
-  padding: 6px 12px !important;
-  border-bottom: 1px solid var(--border2) !important;
-  border-top: 2px solid var(--border2);
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
 }
-.week-label {
-  font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 2px;
-  color: var(--purple); display: flex; align-items: center; gap: 8px;
+
+.card-header{
+    padding:16px;
+    border-bottom:1px solid var(--border);
+    font-weight:600;
 }
-.week-totals {
-  font-family: 'DM Mono', monospace; font-size: 11px;
-  display: flex; gap: 16px; margin-top: 2px;
+
+.card-body{
+    padding:16px;
 }
-.wt-d { color: var(--red); }
-.wt-y { color: var(--yellow); }
-.wt-c { color: var(--green); }
 
-/* tx table */
-.tx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.tx-table th { text-align: left; padding: 7px 12px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); border-bottom: 1px solid var(--border); font-weight: 400; }
-.tx-table td { padding: 9px 12px; border-bottom: 1px solid rgba(34,34,34,0.8); vertical-align: middle; }
-.tx-table tr.tx-row:last-of-type td { border-bottom: none; }
-.tx-table tr.tx-row:hover td { background: rgba(255,255,255,0.015); }
-.col-dirty { font-family: 'DM Mono', monospace; color: var(--red); }
-.col-cut   { font-family: 'DM Mono', monospace; color: var(--yellow); }
-.col-clean { font-family: 'DM Mono', monospace; color: var(--green); font-weight: 500; }
-.tx-del { background: none; border: none; color: var(--border2); cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px; transition: color .15s; }
-.tx-del:hover { color: var(--red); }
+input,select{
+    width:100%;
+    background:#11151c;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px;
+}
 
-/* totals grid */
-.totals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
-.tg-cell { background: var(--card); padding: 12px 14px; }
-.tg-name { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
-.tg-row { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 11px; margin-bottom: 2px; }
-.tg-row .lbl { color: var(--dim); }
-.tg-row .val-d { color: var(--red); }
-.tg-row .val-c { color: var(--green); }
-.tg-row .val-y { color: var(--yellow); }
+button{
+    background:var(--green);
+    color:black;
+    border:none;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
 
-.empty { color: var(--dim); font-size: 12px; padding: 20px; text-align: center; letter-spacing: 1px; }
+button:hover{
+    opacity:.9;
+}
 
-@keyframes pop { from { opacity:0; transform: translateY(-3px); } to { opacity:1; transform: translateY(0); } }
-.pop { animation: pop .16s ease; }
+.stack{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
 
-@media (max-width: 720px) {
-  .wrap { grid-template-columns: 1fr; }
-  .wash-form-row2 { grid-template-columns: 1fr 1fr; }
-  .wash-form-row2 .btn { grid-column: span 2; }
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.stat-value{
+    margin-top:8px;
+    font-size:24px;
+    font-weight:700;
+}
+
+.green{color:var(--green);}
+.yellow{color:var(--yellow);}
+.red{color:var(--red);}
+
+.member{
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    border-bottom:1px solid var(--border);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    text-align:left;
+    padding:12px;
+}
+
+thead{
+    background:#11151c;
+}
+
+tbody tr{
+    border-bottom:1px solid var(--border);
+}
+
+@media(max-width:900px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
 }
 </style>
+
 </head>
 <body>
 
-<header>
-  <div class="logo">WASH <span class="logo-sep">/</span> TRACKER</div>
-  <div class="header-sub">GTA RP &nbsp;·&nbsp; Org cut: 24%</div>
-</header>
+<div class="container">
 
-<div class="wrap">
+<h1>Wash Tracker</h1>
 
-  <!-- LEFT -->
-  <div class="left">
-    <div class="card">
-      <div class="card-head">Crew Members</div>
-      <div class="card-body">
-        <div class="add-row">
-          <input type="text" id="new-name" placeholder="Name or handle…" onkeydown="if(event.key==='Enter')addMember()" />
-          <button class="btn btn-green" onclick="addMember()">ADD</button>
-        </div>
-      </div>
-      <div class="member-list" id="member-list">
-        <div class="empty">No members yet.</div>
-      </div>
+<div class="stats">
+    <div class="stat">
+        <div class="stat-label">TOTAL DIRTY</div>
+        <div class="stat-value red" id="totalDirty">$0</div>
     </div>
 
-    <div class="card">
-      <div class="card-head">All-Time Totals</div>
-      <div class="totals-grid" id="totals-grid">
-        <div class="empty" style="grid-column:1/-1">No data yet.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="right">
-
-    <!-- Log wash -->
-    <div class="card">
-      <div class="card-head">Log Wash</div>
-      <div class="card-body">
-        <!-- Row 1: member + week range -->
-        <div class="wash-form">
-          <div class="field">
-            <label>Member</label>
-            <select id="w-member"><option value="">— Select —</option></select>
-          </div>
-          <div class="field">
-            <label>Week (Sun → Sun)</label>
-            <select id="w-week"><option value="">— Select week —</option></select>
-          </div>
-        </div>
-        <!-- Row 2: dirty, clean, log btn -->
-        <div class="wash-form-row2">
-          <div class="field">
-            <label>Dirty Given ($)</label>
-            <input type="number" id="w-dirty" placeholder="0" min="0" oninput="previewWash()" />
-          </div>
-          <div class="field">
-            <label>Clean Received ($)</label>
-            <input type="number" id="w-clean" placeholder="auto" min="0" oninput="previewWash()" />
-          </div>
-          <div class="field">
-            <label>Custom week start</label>
-            <input type="date" id="w-custom-date" onchange="onCustomDate()" title="Pick any Sunday to create a custom week" />
-          </div>
-          <button class="btn btn-green" onclick="logWash()" style="height:38px;align-self:flex-end">LOG</button>
-        </div>
-        <div class="wash-preview" id="wash-preview">
-          <span class="wp-d" id="wp-d">$0 dirty</span>
-          <span class="wp-arrow">→</span>
-          <span>org takes <span class="wp-cut" id="wp-cut">$0</span></span>
-          <span class="wp-arrow">→</span>
-          <span>you get <span class="wp-c" id="wp-c">$0</span> clean</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- History -->
-    <div class="card">
-      <div class="card-head">
-        <span>Transaction History</span>
-        <button class="btn-ghost" onclick="clearAll()">CLEAR ALL</button>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="tx-table">
-          <thead>
-            <tr>
-              <th>Member</th>
-              <th>Dirty In</th>
-              <th>Org Cut</th>
-              <th>Clean Out</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="tx-body">
-            <tr><td colspan="5" class="empty">No transactions yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
+```
+<div class="stat">
+    <div class="stat-label">TOTAL CUT</div>
+    <div class="stat-value yellow" id="totalCut">$0</div>
 </div>
 
-<script>
-const ORG_CUT = 0.24;
-let state = { members: [], txs: [] };
+<div class="stat">
+    <div class="stat-label">TOTAL CLEAN</div>
+    <div class="stat-value green" id="totalClean">$0</div>
+</div>
+```
 
-const save = () => { try { localStorage.setItem('wash_v5', JSON.stringify(state)); } catch(e){} };
-const load = () => { try { const r = localStorage.getItem('wash_v5'); if (r) state = JSON.parse(r); } catch(e){} };
-const fmt  = n => '$' + Math.round(n||0).toLocaleString();
-const uid  = () => Math.random().toString(36).slice(2,9);
+</div>
 
-// ── Week helpers ──
-// Returns the Sunday on or before a given date as YYYY-MM-DD
-function prevSunday(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00');
-  d.setDate(d.getDate() - d.getDay()); // getDay() 0=Sun
-  return d.toISOString().slice(0,10);
+<div class="grid">
+
+<div class="stack">
+
+<div class="card">
+<div class="card-header">Add Member</div>
+<div class="card-body stack">
+<input id="memberName" placeholder="Member Name">
+<button id="addMemberBtn">Add Member</button>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">Members</div>
+<div id="memberList"></div>
+</div>
+
+</div>
+
+<div class="stack">
+
+<div class="card">
+<div class="card-header">Log Wash</div>
+<div class="card-body stack">
+
+<select id="memberSelect"></select>
+
+<input
+type="number"
+id="dirtyAmount"
+placeholder="Dirty Amount">
+
+<button id="logWashBtn">
+Log Wash
+</button>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">History</div>
+
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Dirty</th>
+<th>Cut</th>
+<th>Clean</th>
+</tr>
+</thead>
+
+<tbody id="txTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+onSnapshot,
+query,
+orderBy,
+serverTimestamp
 }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-function addDays(dateStr, n) {
-  const d = new Date(dateStr + 'T12:00:00');
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0,10);
-}
+const firebaseConfig = {
+apiKey:"YOUR_API_KEY",
+authDomain:"YOUR_DOMAIN",
+projectId:"YOUR_PROJECT_ID"
+};
 
-function fmtDate(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('en-NZ', { day:'numeric', month:'short' });
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-function weekLabel(sunStr) {
-  return `${fmtDate(sunStr)} – ${fmtDate(addDays(sunStr, 6))}`;
-}
+const CUT = 0.24;
 
-// Generate the last 8 Sundays (most recent first) + any weeks already in txs
-function getWeekOptions() {
-  const seen = new Set();
-  const weeks = [];
+const membersCol = collection(db,"members");
+const txCol = collection(db,"transactions");
 
-  // From existing transactions
-  state.txs.forEach(t => { if (t.weekStart) seen.add(t.weekStart); });
+const money = n =>
+"$"+Math.round(n).toLocaleString();
 
-  // Last 8 Sundays
-  const today = new Date();
-  today.setHours(12,0,0,0);
-  const thisSun = new Date(today);
-  thisSun.setDate(today.getDate() - today.getDay());
-  for (let i = 0; i < 8; i++) {
-    const d = new Date(thisSun);
-    d.setDate(thisSun.getDate() - i * 7);
-    seen.add(d.toISOString().slice(0,10));
-  }
+document.getElementById("addMemberBtn")
+.onclick = async () => {
 
-  seen.forEach(s => weeks.push(s));
-  weeks.sort((a,b) => b.localeCompare(a)); // newest first
-  return weeks;
-}
+const name =
+document.getElementById("memberName")
+.value.trim();
 
-function populateWeekSelect(preserveVal) {
-  const sel = document.getElementById('w-week');
-  const cur = preserveVal || sel.value;
-  const weeks = getWeekOptions();
-  sel.innerHTML = '<option value="">— Select week —</option>' +
-    weeks.map(w => `<option value="${w}" ${w===cur?'selected':''}>${weekLabel(w)}</option>`).join('');
-}
+if(!name) return;
 
-function onCustomDate() {
-  const val = document.getElementById('w-custom-date').value;
-  if (!val) return;
-  const sun = prevSunday(val);
-  populateWeekSelect(sun);
-  document.getElementById('w-week').value = sun;
-  document.getElementById('w-custom-date').value = '';
-}
+await addDoc(membersCol,{
+name,
+createdAt:serverTimestamp()
+});
 
-// ── Render ──
-function render() {
-  const { members, txs } = state;
+document.getElementById("memberName")
+.value="";
+};
 
-  // Member dropdown
-  const msel = document.getElementById('w-member');
-  const mcur = msel.value;
-  msel.innerHTML = '<option value="">— Select —</option>' +
-    members.map(m => `<option value="${m.id}" ${m.id===mcur?'selected':''}>${m.name}</option>`).join('');
+document.getElementById("logWashBtn")
+.onclick = async () => {
 
-  populateWeekSelect();
+const member =
+JSON.parse(
+document.getElementById("memberSelect")
+.value
+);
 
-  // Member sidebar list
-  const ml = document.getElementById('member-list');
-  if (!members.length) {
-    ml.innerHTML = '<div class="empty">No members yet.</div>';
-  } else {
-    ml.innerHTML = members.map(m => {
-      const mt = txs.filter(t => t.mid === m.id);
-      const td = mt.reduce((a,t) => a+t.dirty, 0);
-      const tc = mt.reduce((a,t) => a+t.clean, 0);
-      return `<div class="member-row pop">
-        <div>
-          <div class="m-name">${m.name}</div>
-          <div class="m-totals"><span class="dv">${fmt(td)}</span> dirty &nbsp;·&nbsp; <span class="cv">${fmt(tc)}</span> clean</div>
-        </div>
-        <button class="btn-red-out" onclick="removeMember('${m.id}')">REMOVE</button>
-      </div>`;
-    }).join('');
-  }
+const dirty =
+Number(
+document.getElementById("dirtyAmount")
+.value
+);
 
-  // All-time totals grid
-  const tg = document.getElementById('totals-grid');
-  if (!members.length) {
-    tg.innerHTML = '<div class="empty" style="grid-column:1/-1">No data yet.</div>';
-  } else {
-    tg.innerHTML = members.map(m => {
-      const mt  = txs.filter(t => t.mid === m.id);
-      const td  = mt.reduce((a,t) => a+t.dirty, 0);
-      const tc  = mt.reduce((a,t) => a+t.clean, 0);
-      const cut = mt.reduce((a,t) => a+t.cut,   0);
-      return `<div class="tg-cell">
-        <div class="tg-name">${m.name}</div>
-        <div class="tg-row"><span class="lbl">Dirty in</span><span class="val-d">${fmt(td)}</span></div>
-        <div class="tg-row"><span class="lbl">Org cut</span><span class="val-y">${fmt(cut)}</span></div>
-        <div class="tg-row"><span class="lbl">Clean out</span><span class="val-c">${fmt(tc)}</span></div>
-      </div>`;
-    }).join('');
-  }
+if(!dirty) return;
 
-  // Transaction history — grouped by week
-  const tb = document.getElementById('tx-body');
-  if (!txs.length) {
-    tb.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet.</td></tr>';
-    save(); return;
-  }
+const cut = dirty * CUT;
+const clean = dirty - cut;
 
-  // Group txs by weekStart
-  const weekMap = {};
-  txs.forEach(t => {
-    const wk = t.weekStart || 'unassigned';
-    if (!weekMap[wk]) weekMap[wk] = [];
-    weekMap[wk].push(t);
-  });
+await addDoc(txCol,{
+memberId:member.id,
+memberName:member.name,
+dirty,
+cut,
+clean,
+createdAt:serverTimestamp()
+});
 
-  // Sort weeks newest first
-  const sortedWeeks = Object.keys(weekMap).sort((a,b) => b.localeCompare(a));
+document.getElementById("dirtyAmount")
+.value="";
+};
 
-  let html = '';
-  sortedWeeks.forEach(wk => {
-    const wkTxs = weekMap[wk];
-    const wDirty = wkTxs.reduce((a,t) => a+t.dirty, 0);
-    const wCut   = wkTxs.reduce((a,t) => a+t.cut,   0);
-    const wClean = wkTxs.reduce((a,t) => a+t.clean,  0);
-    const label  = wk === 'unassigned' ? 'No week assigned' : weekLabel(wk);
+onSnapshot(membersCol,snap=>{
 
-    html += `<tr class="week-header">
-      <td colspan="5">
-        <div class="week-label">◆ ${label}</div>
-        <div class="week-totals">
-          <span class="wt-d">${fmt(wDirty)} dirty</span>
-          <span class="wt-y">−${fmt(wCut)} cut</span>
-          <span class="wt-c">${fmt(wClean)} clean</span>
-        </div>
-      </td>
-    </tr>`;
+const members=[];
 
-    // Within each week, combine entries by member
-    const memberMap = {};
-    wkTxs.forEach(t => {
-      if (!memberMap[t.mid]) memberMap[t.mid] = { name: t.name, dirty:0, cut:0, clean:0, ids:[] };
-      memberMap[t.mid].dirty += t.dirty;
-      memberMap[t.mid].cut   += t.cut;
-      memberMap[t.mid].clean += t.clean;
-      memberMap[t.mid].ids.push(t.id);
-    });
+snap.forEach(doc=>{
+members.push({
+id:doc.id,
+...doc.data()
+});
+});
 
-    Object.values(memberMap).forEach(m => {
-      html += `<tr class="tx-row pop">
-        <td style="font-weight:600">${m.name}</td>
-        <td class="col-dirty">${fmt(m.dirty)}</td>
-        <td class="col-cut">${fmt(m.cut)}</td>
-        <td class="col-clean">${fmt(m.clean)}</td>
-        <td><button class="tx-del" onclick="deleteWeekMember('${wk}','${m.ids[0]}',${JSON.stringify(m.ids)})" title="Delete">×</button></td>
-      </tr>`;
-    });
-  });
+document.getElementById("memberList")
+.innerHTML =
+members.map(m=>`
+<div class="member">
+<span>${m.name}</span>
+</div>
+`).join("");
 
-  tb.innerHTML = html;
-  save();
-}
+document.getElementById("memberSelect")
+.innerHTML =
+members.map(m=>`
+<option value='${JSON.stringify(m)}'>
+${m.name}
+</option>
+`).join("");
 
-function addMember() {
-  const inp = document.getElementById('new-name');
-  const name = inp.value.trim();
-  if (!name) return;
-  state.members.push({ id: uid(), name });
-  inp.value = '';
-  render();
-}
+});
 
-function removeMember(id) {
-  if (!confirm('Remove member? Their transactions will stay in the log.')) return;
-  state.members = state.members.filter(m => m.id !== id);
-  render();
-}
+onSnapshot(
+query(txCol,orderBy("createdAt","desc")),
+snap=>{
 
-function previewWash() {
-  const dirty = parseFloat(document.getElementById('w-dirty').value) || 0;
-  const mc    = parseFloat(document.getElementById('w-clean').value);
-  const prev  = document.getElementById('wash-preview');
-  if (dirty <= 0) { prev.style.display = 'none'; return; }
-  const cut   = dirty * ORG_CUT;
-  const clean = isNaN(mc) ? dirty - cut : mc;
-  document.getElementById('wp-d').textContent   = fmt(dirty) + ' dirty';
-  document.getElementById('wp-cut').textContent = fmt(cut);
-  document.getElementById('wp-c').textContent   = fmt(clean);
-  prev.style.display = 'flex';
-}
+let dirty=0;
+let cut=0;
+let clean=0;
 
-function logWash() {
-  const mid   = document.getElementById('w-member').value;
-  const wk    = document.getElementById('w-week').value;
-  const dirty = parseFloat(document.getElementById('w-dirty').value);
-  const mc    = parseFloat(document.getElementById('w-clean').value);
+const rows=[];
 
-  if (!mid)             { alert('Select a member.'); return; }
-  if (!wk)              { alert('Select a week.'); return; }
-  if (!dirty || dirty <= 0) { alert('Enter a dirty amount.'); return; }
+snap.forEach(doc=>{
 
-  const cut   = dirty * ORG_CUT;
-  const clean = isNaN(mc) ? dirty - cut : mc;
-  const m     = state.members.find(x => x.id === mid);
-  const name  = m ? m.name : '(removed)';
+const tx=doc.data();
 
-  state.txs.push({ id: uid(), mid, name, dirty, cut, clean, weekStart: wk });
+dirty+=tx.dirty;
+cut+=tx.cut;
+clean+=tx.clean;
 
-  document.getElementById('w-dirty').value = '';
-  document.getElementById('w-clean').value = '';
-  document.getElementById('wash-preview').style.display = 'none';
-  render();
-}
+rows.push(`
+<tr>
+<td>${tx.memberName}</td>
+<td>${money(tx.dirty)}</td>
+<td>${money(tx.cut)}</td>
+<td>${money(tx.clean)}</td>
+</tr>
+`);
 
-function deleteWeekMember(wk, _, ids) {
-  if (!confirm('Remove all entries for this member in this week?')) return;
-  state.txs = state.txs.filter(t => !ids.includes(t.id));
-  render();
-}
+});
 
-function clearAll() {
-  if (!confirm('Clear all transactions?')) return;
-  state.txs = [];
-  render();
-}
+document.getElementById("txTable")
+.innerHTML = rows.join("");
 
-load();
-render();
+document.getElementById("totalDirty")
+.textContent = money(dirty);
+
+document.getElementById("totalCut")
+.textContent = money(cut);
+
+document.getElementById("totalClean")
+.textContent = money(clean);
+
+});
+
 </script>
+
 </body>
 </html>
