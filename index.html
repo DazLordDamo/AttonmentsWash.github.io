@@ -1,412 +1,295 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wash Tracker</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root{
-    --bg:#0f1115;
-    --card:#181c24;
-    --border:#262c36;
-    --text:#f1f5f9;
-    --muted:#94a3b8;
-    --green:#22c55e;
-    --yellow:#facc15;
-    --red:#ef4444;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:Inter,sans-serif;
-    padding:24px;
-}
-
-.container{
-    max-width:1400px;
-    margin:auto;
-}
-
-h1{
-    margin-bottom:20px;
-}
-
-.grid{
-    display:grid;
-    gap:20px;
-    grid-template-columns:350px 1fr;
-}
-
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:12px;
-    overflow:hidden;
-}
-
-.card-header{
-    padding:16px;
-    border-bottom:1px solid var(--border);
-    font-weight:600;
-}
-
-.card-body{
-    padding:16px;
-}
-
-input,select{
-    width:100%;
-    background:#11151c;
-    color:white;
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:10px;
-}
-
-button{
-    background:var(--green);
-    color:black;
-    border:none;
-    padding:10px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:600;
-}
-
-button:hover{
-    opacity:.9;
-}
-
-.stack{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    margin-bottom:20px;
-}
-
-.stat{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:20px;
-}
-
-.stat-label{
-    color:var(--muted);
-    font-size:12px;
-}
-
-.stat-value{
-    margin-top:8px;
-    font-size:24px;
-    font-weight:700;
-}
-
-.green{color:var(--green);}
-.yellow{color:var(--yellow);}
-.red{color:var(--red);}
-
-.member{
-    display:flex;
-    justify-content:space-between;
-    padding:10px;
-    border-bottom:1px solid var(--border);
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th,td{
-    text-align:left;
-    padding:12px;
-}
-
-thead{
-    background:#11151c;
-}
-
-tbody tr{
-    border-bottom:1px solid var(--border);
-}
-
-@media(max-width:900px){
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Wash Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .tab-active { border-bottom: 3px solid #4f46e5; color: #4f46e5; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen font-sans">
 
-<div class="container">
+    <!-- AUTH SECTION -->
+    <div id="auth-container" class="flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-600">Wash Portal</h1>
+            
+            <div id="login-form">
+                <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-4">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-4">
+                <button onclick="login()" class="w-full bg-indigo-600 text-white p-3 rounded font-bold hover:bg-indigo-700 transition">Login</button>
+                <p class="text-center mt-4 text-sm">No account? <a href="#" onclick="toggleAuth()" class="text-indigo-600 underline">Register</a></p>
+            </div>
 
-<h1>Wash Tracker</h1>
-
-<div class="stats">
-    <div class="stat">
-        <div class="stat-label">TOTAL DIRTY</div>
-        <div class="stat-value red" id="totalDirty">$0</div>
+            <div id="register-form" class="hidden">
+                <input type="text" id="reg-username" placeholder="Character Name" class="w-full p-3 border rounded mb-4">
+                <input type="email" id="reg-email" placeholder="Email" class="w-full p-3 border rounded mb-4">
+                <input type="password" id="reg-password" placeholder="Password" class="w-full p-3 border rounded mb-4">
+                <select id="reg-org" class="w-full p-3 border rounded mb-4 text-gray-500">
+                    <option value="">Select Organization</option>
+                    <option value="Lost MC">Lost MC</option>
+                    <option value="Cartel">Cartel</option>
+                    <option value="Mafia">Mafia</option>
+                    <option value="Mechanics">Mechanics</option>
+                    <option value="Police">Police</option>
+                </select>
+                <button onclick="register()" class="w-full bg-green-600 text-white p-3 rounded font-bold hover:bg-green-700 transition">Create Account</button>
+                <p class="text-center mt-4 text-sm">Have an account? <a href="#" onclick="toggleAuth()" class="text-indigo-600 underline">Login</a></p>
+            </div>
+        </div>
     </div>
 
-```
-<div class="stat">
-    <div class="stat-label">TOTAL CUT</div>
-    <div class="stat-value yellow" id="totalCut">$0</div>
-</div>
+    <!-- MAIN APP SECTION -->
+    <div id="app-container" class="hidden">
+        <!-- Navbar -->
+        <nav class="bg-indigo-700 text-white p-4 shadow-lg flex justify-between items-center">
+            <h2 class="text-xl font-bold">Wash Tracker v1.0</h2>
+            <div class="flex items-center gap-4">
+                <span id="user-display" class="italic"></span>
+                <button onclick="logout()" class="bg-red-500 px-3 py-1 rounded text-sm hover:bg-red-600">Logout</button>
+            </div>
+        </nav>
 
-<div class="stat">
-    <div class="stat-label">TOTAL CLEAN</div>
-    <div class="stat-value green" id="totalClean">$0</div>
-</div>
-```
+        <div class="max-w-6xl mx-auto p-4 md:p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Add Transaction & Stats -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2">New Wash Entry</h3>
+                        <label class="block text-sm text-gray-600">Dirty Amount ($)</label>
+                        <input type="number" id="wash-amount" oninput="calcWash()" placeholder="0" class="w-full p-2 border rounded mb-4 text-lg">
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between text-sm mb-1"><span>Org Fee (24%):</span><span id="calc-fee" class="font-bold text-red-600">$0</span></div>
+                            <div class="flex justify-between text-lg font-bold"><span>To Return (76%):</span><span id="calc-return" class="text-green-600">$0</span></div>
+                        </div>
+                        <button onclick="submitWash()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">Submit Transaction</button>
+                    </div>
 
-</div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2">Your Stats</h3>
+                        <div class="text-center py-4">
+                            <p class="text-gray-500 text-sm">Total Washed</p>
+                            <p id="personal-total" class="text-3xl font-bold text-indigo-600">$0</p>
+                        </div>
+                    </div>
+                </div>
 
-<div class="grid">
+                <!-- Right Column: Tabs & Data -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="flex bg-gray-50 border-b overflow-x-auto" id="org-tabs">
+                            <button onclick="setFilter('All')" class="px-6 py-3 font-semibold tab-active" data-org="All">Global</button>
+                            <button onclick="setFilter('Lost MC')" class="px-6 py-3 font-semibold text-gray-500" data-org="Lost MC">Lost MC</button>
+                            <button onclick="setFilter('Cartel')" class="px-6 py-3 font-semibold text-gray-500" data-org="Cartel">Cartel</button>
+                            <button onclick="setFilter('Mafia')" class="px-6 py-3 font-semibold text-gray-500" data-org="Mafia">Mafia</button>
+                            <button onclick="setFilter('Leaderboard')" class="px-6 py-3 font-semibold text-gray-500" data-org="Leaderboard">Leaderboard 🏆</button>
+                        </div>
 
-<div class="stack">
+                        <div id="table-view" class="p-4">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-gray-400 text-sm uppercase">
+                                            <th class="pb-3 px-2">Date</th>
+                                            <th class="pb-3 px-2">User</th>
+                                            <th class="pb-3 px-2">Dirty</th>
+                                            <th class="pb-3 px-2">Fee (24%)</th>
+                                            <th class="pb-3 px-2">Cleaned</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transaction-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
 
-<div class="card">
-<div class="card-header">Add Member</div>
-<div class="card-body stack">
-<input id="memberName" placeholder="Member Name">
-<button id="addMemberBtn">Add Member</button>
-</div>
-</div>
+                        <div id="leaderboard-view" class="p-4 hidden">
+                            <h3 class="text-center font-bold text-xl mb-4">Top Washers</h3>
+                            <div id="leaderboard-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="card">
-<div class="card-header">Members</div>
-<div id="memberList"></div>
-</div>
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-</div>
+        // PASTE YOUR CONFIG HERE
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-<div class="stack">
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-<div class="card">
-<div class="card-header">Log Wash</div>
-<div class="card-body stack">
+        let currentUserData = null;
+        let currentFilter = 'All';
 
-<select id="memberSelect"></select>
+        // AUTH LOGIC
+        window.toggleAuth = () => {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('register-form').classList.toggle('hidden');
+        };
 
-<input
-type="number"
-id="dirtyAmount"
-placeholder="Dirty Amount">
+        window.register = async () => {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const username = document.getElementById('reg-username').value;
+            const org = document.getElementById('reg-org').value;
 
-<button id="logWashBtn">
-Log Wash
-</button>
+            if(!email || !password || !username || !org) return alert("Fill all fields");
 
-</div>
-</div>
+            try {
+                const res = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", res.user.uid), {
+                    username, organization: org, uid: res.user.uid
+                });
+            } catch (e) { alert(e.message); }
+        };
 
-<div class="card">
-<div class="card-header">History</div>
+        window.login = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try { await signInWithEmailAndPassword(auth, email, password); } catch (e) { alert(e.message); }
+        };
 
-<table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Dirty</th>
-<th>Cut</th>
-<th>Clean</th>
-</tr>
-</thead>
+        window.logout = () => signOut(auth);
 
-<tbody id="txTable"></tbody>
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                currentUserData = userDoc.data();
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('user-display').innerText = `${currentUserData.username} (${currentUserData.organization})`;
+                initListeners();
+            } else {
+                document.getElementById('auth-container').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+            }
+        });
 
-</table>
+        // APP LOGIC
+        window.calcWash = () => {
+            const amt = document.getElementById('wash-amount').value || 0;
+            const fee = amt * 0.24;
+            const ret = amt * 0.76;
+            document.getElementById('calc-fee').innerText = `$${Math.floor(fee).toLocaleString()}`;
+            document.getElementById('calc-return').innerText = `$${Math.floor(ret).toLocaleString()}`;
+        };
 
-</div>
+        window.submitWash = async () => {
+            const amt = parseInt(document.getElementById('wash-amount').value);
+            if(!amt || amt <= 0) return alert("Enter valid amount");
 
-</div>
+            await addDoc(collection(db, "transactions"), {
+                uid: auth.currentUser.uid,
+                username: currentUserData.username,
+                organization: currentUserData.organization,
+                dirty: amt,
+                fee: amt * 0.24,
+                returned: amt * 0.76,
+                timestamp: Date.now()
+            });
+            document.getElementById('wash-amount').value = '';
+            calcWash();
+        };
 
-</div>
+        window.setFilter = (org) => {
+            currentFilter = org;
+            document.querySelectorAll('#org-tabs button').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-gray-500');
+                if(btn.getAttribute('data-org') === org) {
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('text-gray-500');
+                }
+            });
+            
+            if(org === 'Leaderboard') {
+                document.getElementById('table-view').classList.add('hidden');
+                document.getElementById('leaderboard-view').classList.remove('hidden');
+            } else {
+                document.getElementById('table-view').classList.remove('hidden');
+                document.getElementById('leaderboard-view').classList.add('hidden');
+            }
+            initListeners();
+        };
 
-</div>
+        function initListeners() {
+            // Personal Total
+            const qPersonal = query(collection(db, "transactions"), where("uid", "==", auth.currentUser.uid));
+            onSnapshot(qPersonal, (snap) => {
+                let total = 0;
+                snap.forEach(d => total += d.data().dirty);
+                document.getElementById('personal-total').innerText = `$${total.toLocaleString()}`;
+            });
 
-<script type="module">
+            // Transactions Table
+            let qTable = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
+            if(currentFilter !== 'All' && currentFilter !== 'Leaderboard') {
+                qTable = query(collection(db, "transactions"), where("organization", "==", currentFilter), orderBy("timestamp", "desc"));
+            }
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+            onSnapshot(qTable, (snap) => {
+                const list = document.getElementById('transaction-list');
+                const leaderboard = {};
+                list.innerHTML = '';
+                
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const date = new Date(data.timestamp).toLocaleDateString();
+                    
+                    // Update table
+                    list.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50 transition">
+                            <td class="py-3 px-2 text-xs text-gray-500">${date}</td>
+                            <td class="py-3 px-2 font-semibold text-gray-700">${data.username}</td>
+                            <td class="py-3 px-2 text-indigo-600 font-bold">$${data.dirty.toLocaleString()}</td>
+                            <td class="py-3 px-2 text-red-500">$${Math.floor(data.fee).toLocaleString()}</td>
+                            <td class="py-3 px-2 text-green-600 font-bold">$${Math.floor(data.returned).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+            });
 
-import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot,
-query,
-orderBy,
-serverTimestamp
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_DOMAIN",
-projectId:"YOUR_PROJECT_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const CUT = 0.24;
-
-const membersCol = collection(db,"members");
-const txCol = collection(db,"transactions");
-
-const money = n =>
-"$"+Math.round(n).toLocaleString();
-
-document.getElementById("addMemberBtn")
-.onclick = async () => {
-
-const name =
-document.getElementById("memberName")
-.value.trim();
-
-if(!name) return;
-
-await addDoc(membersCol,{
-name,
-createdAt:serverTimestamp()
-});
-
-document.getElementById("memberName")
-.value="";
-};
-
-document.getElementById("logWashBtn")
-.onclick = async () => {
-
-const member =
-JSON.parse(
-document.getElementById("memberSelect")
-.value
-);
-
-const dirty =
-Number(
-document.getElementById("dirtyAmount")
-.value
-);
-
-if(!dirty) return;
-
-const cut = dirty * CUT;
-const clean = dirty - cut;
-
-await addDoc(txCol,{
-memberId:member.id,
-memberName:member.name,
-dirty,
-cut,
-clean,
-createdAt:serverTimestamp()
-});
-
-document.getElementById("dirtyAmount")
-.value="";
-};
-
-onSnapshot(membersCol,snap=>{
-
-const members=[];
-
-snap.forEach(doc=>{
-members.push({
-id:doc.id,
-...doc.data()
-});
-});
-
-document.getElementById("memberList")
-.innerHTML =
-members.map(m=>`
-<div class="member">
-<span>${m.name}</span>
-</div>
-`).join("");
-
-document.getElementById("memberSelect")
-.innerHTML =
-members.map(m=>`
-<option value='${JSON.stringify(m)}'>
-${m.name}
-</option>
-`).join("");
-
-});
-
-onSnapshot(
-query(txCol,orderBy("createdAt","desc")),
-snap=>{
-
-let dirty=0;
-let cut=0;
-let clean=0;
-
-const rows=[];
-
-snap.forEach(doc=>{
-
-const tx=doc.data();
-
-dirty+=tx.dirty;
-cut+=tx.cut;
-clean+=tx.clean;
-
-rows.push(`
-<tr>
-<td>${tx.memberName}</td>
-<td>${money(tx.dirty)}</td>
-<td>${money(tx.cut)}</td>
-<td>${money(tx.clean)}</td>
-</tr>
-`);
-
-});
-
-document.getElementById("txTable")
-.innerHTML = rows.join("");
-
-document.getElementById("totalDirty")
-.textContent = money(dirty);
-
-document.getElementById("totalCut")
-.textContent = money(cut);
-
-document.getElementById("totalClean")
-.textContent = money(clean);
-
-});
-
-</script>
-
+            // Leaderboard Generation
+            onSnapshot(collection(db, "transactions"), (snap) => {
+                const totals = {};
+                snap.forEach(d => {
+                    const data = d.data();
+                    totals[data.username] = (totals[data.username] || 0) + data.dirty;
+                });
+                
+                const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+                const lbList = document.getElementById('leaderboard-list');
+                lbList.innerHTML = '';
+                sorted.forEach(([name, amt], i) => {
+                    lbList.innerHTML += `
+                        <div class="flex justify-between items-center p-3 ${i < 3 ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50'} border rounded-lg">
+                            <span class="font-bold">${i+1}. ${name}</span>
+                            <span class="text-indigo-600 font-black">$${amt.toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+            });
+        }
+    </script>
 </body>
 </html>
